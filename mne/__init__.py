@@ -17,7 +17,7 @@
 #
 
 __version__ = '0.16.dev0'
-
+print('mne from src')
 # have to import verbose first since it's needed by many things
 from .utils import (set_log_level, set_log_file, verbose, set_config,
                     get_config, get_config_path, set_cache_dir,

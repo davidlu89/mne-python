@@ -52,17 +52,14 @@ class FilterBank(object):
         _data = self._reshape_data(data, axis=axis)
 
         nsampd = self.nsamp // self.decimate_by
+        data_f = fft.rfft(_data, axis=axis, planner_effort=planner_effort) / self.decimate_by
         if mode == 'hilbert':
-            data_f = fft.rfft(_data, axis=axis, planner_effort=planner_effort) / self.decimate_by
-
             _X = np.zeros((self.nch, self.nfreqs, nsampd//2), dtype=np.complex64)
             _X[:, self._idx2, self._idx1] = data_f[:,self._idx1] * filts
 
             return fft.irfft(_X, axis=axis, planner_effort=planner_effort)
 
         else:
-            data_f = fft.fft(_data, axis=axis, planner_effort=planner_effort) / self.decimate_by
-
             _X = np.zeros((self.nch, self.nfreqs, nsampd), dtype=np.complex64)
             _X[:, self._idx2, self._idx1] = data_f[:,self._idx1] * filts
 

@@ -20,27 +20,55 @@ class FilterBank(object):
         self.decimate_by = decimate_by
 
         # Organize frequencies of interests
-        self.freqs = foi
-        self.center_f = cf
-        self.bandwidth = bw
+        self._freqs = foi
+        self._center_f = cf
+        self._bandwidth = bw
         self._get_all_frequencies()
 
-        self.nfreqs = self.freqs.shape[0]
+        self._nfreqs = self.freqs.shape[0]
 
         # Organize data
         self._data = self._reshape_data(data)
         self.nch, self.nsamp = self._data.shape
 
-        self.sfreq = sfreq
-        self.int_phz = int(self.nsamp // self.sfreq) # interval per Hz
+        self._sfreq = sfreq
+        self._int_phz = int(self.nsamp // self.sfreq) # interval per Hz
         self._nsamp = int(self.bandwidth * 2 * self.int_phz)
 
         # Create a prototype filter
-        self.order = order
+        self._order = order
         self.filts = self._create_prototype_filter(self.order, self.bandwidth/2., self.sfreq, self.nsamp)
 
         # Create indices for efficiently filtering the signal
         self._get_indices_for_frequency_shifts()
+
+    @property
+    def freqs(self):
+        return self._freqs
+
+    @property
+    def center_f(self):
+        return self._center_f
+
+    @property
+    def bandwidth(self):
+        return self._bandwidth
+
+    @property
+    def nfreqs(self):
+        return self._nfreqs
+
+    @property
+    def sfreq(self):
+        return self._sfreq
+
+    @property
+    def order(self):
+        return self._order
+
+    @property
+    def int_phz(self):
+        return self._int_phz
 
     def process(self, data, **kwargs):
         return self.filter_data(data, self.filts, **kwargs)
@@ -128,10 +156,10 @@ class FilterBank(object):
             raise "Must enter one of the following kwargs: 'cf', 'bw', 'fois."
 
         if self.freqs is None:
-            self.freqs = get_frequency_of_interests(self.center_f, self.bandwidth)
+            self._freqs = get_frequency_of_interests(self.center_f, self.bandwidth)
 
         if self.center_f is None or self.bandwidth is None:
-            self.center_f, self.bandwidth = self.get_center_frequencies(self.freqs)
+            self._center_f, self._bandwidth = self.get_center_frequencies(self.freqs)
 
     @staticmethod
     def get_center_frequencies(fois):

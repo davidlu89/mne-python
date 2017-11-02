@@ -15,7 +15,7 @@ class FilterBank(object):
 
     def __init__(self, data,
                  bw=None, cf=None, foi=None,
-                 order=None, sfreq=None, decimate_by=None):
+                 order=None, sfreq=None, decimate_by=1):
 
         self.decimate_by = decimate_by
 

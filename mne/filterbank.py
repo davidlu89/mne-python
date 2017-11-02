@@ -86,6 +86,7 @@ class FilterBank(object):
         """
         cf0 = N // 2
         idx_ = slice(cf0 - int(self.int_phz * f_cut * 2), cf0 + int(self.int_phz * f_cut * 2))
+
         _, filts = self.create_filter(order, f_cut, fs/2., N, shift=True)
 
         return np.atleast_2d(filts[idx_])
@@ -97,7 +98,11 @@ class FilterBank(object):
         """
         # Crop out and index of the fft signal, and demodulate them to DC centered
         # The frequency indices for cropping the fft of the signal, which is twice the bandwidth
-        fois_ix = self.get_frequency_of_interests(self.center_f, self.bandwidth * 2) * self.int_phz
+        fois_ix_ = self.get_frequency_of_interests(self.center_f, self.bandwidth * 2) * self.int_phz
+        fois_ix = fois_ix_.copy()
+        for ix, f in enumerate(fois_ix):
+            if f[0] < 0:
+                fois_ix[ix,:] = f - f[0]
 
         w_ix = np.arange(self.nsamp)
         idx0 = np.logical_and(w_ix[:,np.newaxis] >= fois_ix[:,0][np.newaxis,:], \

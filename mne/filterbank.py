@@ -82,16 +82,16 @@ class FilterBank(object):
         nsampd = self.nsamp // self.decimate_by
         data_f = fft.rfft(_data, axis=axis, planner_effort=planner_effort) / self.decimate_by
         if mode == 'hilbert':
-            _X = np.zeros((self.nch, self.nfreqs, nsampd//2), dtype=np.complex64)
-            _X[:, self._idx2, self._idx1] = data_f[:,self._idx1] * filts
-
-            return fft.irfft(_X, axis=axis, planner_effort=planner_effort)
-
-        else:
             _X = np.zeros((self.nch, self.nfreqs, nsampd), dtype=np.complex64)
             _X[:, self._idx2, self._idx1] = data_f[:,self._idx1] * filts
 
             return fft.ifft(_X * 2, axis=axis, planner_effort=planner_effort)
+
+        else:
+            _X = np.zeros((self.nch, self.nfreqs, nsampd//2), dtype=np.complex64)
+            _X[:, self._idx2, self._idx1] = data_f[:,self._idx1] * filts
+
+            return fft.irfft(_X, axis=axis, planner_effort=planner_effort)
 
     @staticmethod
     def _reshape_data(data, axis=-1):
